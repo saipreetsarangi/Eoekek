@@ -2171,6 +2171,237 @@ local PhonkTb = Window:CreateTab("🎼 Phonk", 4483362458)
 local MultiLTb = Window:CreateTab("♾️ Multi-Lang", 4483362458) 
 local SoundsTb = Window:CreateTab("🔊 Sounds", 4483362458) 
 local BANGTab = Window:CreateTab("BANG🔱", 4483362458)
+local BANGTb = Window:CreateTab("BANG🔱", 4483362458)
+-- ============================================================
+--  PROPS TAB (Rayfield version)
+--  Backend from Xdemic Music V3, UI converted to Rayfield.
+-- ============================================================
+
+-- Create the tab
+local PropTab = Window:CreateTab("PROP🔱", 4483362458)
+
+-- === Backend Variables & Functions (copied from Xdemic) ===
+local activeMode = "None"
+local engineLoopActive = false
+local currentVis = "Orbital"
+local currentTarget = "Self"
+
+-- Get all props owned by the local player
+local function getMyProps()
+    local props = {}
+    local wsCom = workspace:FindFirstChild("WorkspaceCom")
+    if wsCom then
+        for _, item in pairs(wsCom:GetDescendants()) do
+            if item:IsA("Model") and item.Name == "Prop" .. game.Players.LocalPlayer.Name then
+                if item:FindFirstChild("SetCurrentCFrame") then
+                    table.insert(props, item)
+                end
+            end
+        end
+    end
+    return props
+end
+
+-- Get the HumanoidRootPart of the target (self or other player)
+local function getTargetRoot(targetName)
+    if targetName == "Self" then
+        local char = game.Players.LocalPlayer.Character
+        return char and char:FindFirstChild("HumanoidRootPart")
+    else
+        local p = game.Players:FindFirstChild(targetName)
+        if p and p.Character then
+            return p.Character:FindFirstChild("HumanoidRootPart")
+        end
+    end
+    return nil
+end
+
+-- Stop the prop engine
+local function stopPropEngine()
+    activeMode = "None"
+    engineLoopActive = false
+end
+
+-- Start the prop engine with a given mode, target, and visualizer type
+local function startPropEngine(mode, targetName, visType)
+    stopPropEngine()
+    task.wait(0.1)
+    activeMode = mode
+    engineLoopActive = true
+    task.spawn(function()
+        while engineLoopActive do
+            local root = getTargetRoot(targetName)
+            local props = getMyProps()
+            if root and #props > 0 then
+                local t = tick()
+                for i, prop in ipairs(props) do
+                    task.spawn(function()
+                        local baseCFrame = root.CFrame
+                        local finalCFrame = baseCFrame
+                        local color = Color3.fromHSV((t * 0.5 + (i / #props)) % 1, 1, 1)
+                        if activeMode == "Nuke" then
+                            finalCFrame = baseCFrame * CFrame.new(
+                                math.random(-2, 2),
+                                math.random(0, 3),
+                                math.random(-2, 2)
+                            ) * CFrame.Angles(math.random(), math.random(), math.random())
+                        elseif activeMode == "Visualizer" then
+                            if visType == "Orbital" then
+                                local angle = (t * 3) + ((i / #props) * math.pi * 2)
+                                finalCFrame = baseCFrame * CFrame.new(math.cos(angle) * 6, 0, math.sin(angle) * 6)
+                            elseif visType == "Tornado" then
+                                local angle = (t * 5) + ((i / #props) * math.pi * 2)
+                                local heightOffset = (i / #props) * 12
+                                local radius = 2 + (i / #props) * 5
+                                finalCFrame = baseCFrame * CFrame.new(
+                                    math.cos(angle) * radius,
+                                    heightOffset - 4,
+                                    math.sin(angle) * radius
+                                )
+                            elseif visType == "Swarm" then
+                                local offsetX = math.noise(t, i, 0) * 8
+                                local offsetY = math.noise(t, 0, i) * 6
+                                local offsetZ = math.noise(0, t, i) * 8
+                                finalCFrame = baseCFrame * CFrame.new(offsetX, offsetY + 2, offsetZ)
+                            elseif visType == "Grid" then
+                                local spacing = 5
+                                local cols = math.ceil(math.sqrt(#props))
+                                local row = math.floor((i - 1) / cols)
+                                local col = (i - 1) % cols
+                                finalCFrame = baseCFrame * CFrame.new(
+                                    (col - cols / 2) * spacing,
+                                    0,
+                                    (row - cols / 2) * spacing
+                                )
+                            end
+                        end
+                        pcall(function()
+                            prop.SetCurrentCFrame:InvokeServer(finalCFrame)
+                            if prop:FindFirstChild("ChangePropColor") then
+                                prop.ChangePropColor:InvokeServer(color)
+                            end
+                        end)
+                    end)
+                end
+            end
+            task.wait(0.08)
+        end
+    end)
+end
+
+-- === UI Elements using Rayfield ===
+
+-- Section: Target Selection
+PropTab:CreateSection("🎯 Target")
+
+-- Helper to get player names (including "Self")
+local function getTargetOptions()
+    local options = {"Self"}
+    for _, p in pairs(game.Players:GetPlayers()) do
+        if p ~= game.Players.LocalPlayer then
+            table.insert(options, p.Name)
+        end
+    end
+    return options
+end
+
+-- Dropdown for target
+local targetDropdown = PropTab:CreateDropdown({
+    Name = "Select Target",
+    Options = getTargetOptions(),
+    CurrentOption = {"Self"},
+    MultipleOptions = false,
+    Flag = "PropTarget",
+    Callback = function(Option)
+        currentTarget = Option[1] or "Self"
+        -- If engine is running, restart with new target
+        if activeMode ~= "None" then
+            startPropEngine(activeMode, currentTarget, currentVis)
+        end
+    end,
+})
+
+-- Auto-refresh target list every 10 seconds
+task.spawn(function()
+    while task.wait(10) do
+        pcall(function()
+            targetDropdown:Refresh(getTargetOptions(), true)
+        end)
+    end
+end)
+
+-- Section: Visualizer Mode
+PropTab:CreateSection("🌀 Visualizer Mode")
+
+-- Dropdown for visualizer type
+local visDropdown = PropTab:CreateDropdown({
+    Name = "Visualizer Type",
+    Options = {"Orbital", "Swarm", "Tornado", "Grid"},
+    CurrentOption = {"Orbital"},
+    MultipleOptions = false,
+    Flag = "PropVisualizer",
+    Callback = function(Option)
+        currentVis = Option[1] or "Orbital"
+        if activeMode == "Visualizer" then
+            startPropEngine("Visualizer", currentTarget, currentVis)
+        end
+    end,
+})
+
+-- Section: Actions
+PropTab:CreateSection("⚡ Actions")
+
+-- Nuke button (toggles)
+local nukeButton = PropTab:CreateButton({
+    Name = "💥 NUKE PROPS",
+    Callback = function()
+        ButtonPSound()  -- your existing click sound function
+        if activeMode == "Nuke" then
+            stopPropEngine()
+            nukeButton:SetName("💥 NUKE PROPS")
+            -- Reset visualizer button text if needed (we'll handle via flag)
+        else
+            startPropEngine("Nuke", currentTarget, currentVis)
+            nukeButton:SetName("⛔ STOP NUKE")
+            -- If visualizer was running, it will be stopped by startPropEngine
+        end
+    end,
+})
+
+-- Visualizer button (toggles)
+local visButton = PropTab:CreateButton({
+    Name = "🌀 START VISUALIZER",
+    Callback = function()
+        ButtonPSound()
+        if activeMode == "Visualizer" then
+            stopPropEngine()
+            visButton:SetName("🌀 START VISUALIZER")
+        else
+            startPropEngine("Visualizer", currentTarget, currentVis)
+            visButton:SetName("⏹ STOP VISUALIZER")
+            -- If nuke was running, it will be stopped by startPropEngine
+        end
+    end,
+})
+
+-- Stop All button
+PropTab:CreateButton({
+    Name = "⏹ STOP ALL",
+    Callback = function()
+        ButtonPSound()
+        stopPropEngine()
+        nukeButton:SetName("💥 NUKE PROPS")
+        visButton:SetName("🌀 START VISUALIZER")
+        Rayfield:Notify({Title = "Props", Content = "All prop engines stopped", Duration = 2})
+    end,
+})
+
+-- Notification to remind user to place props
+Rayfield:Notify({
+    Title = "PROP🔱",
+    Content = "Place your props (e.g., traffic cones) before using Nuke/Visualizer!",
+    Duration = 5,
+})
 -- ===== XDEMIC BANG OPS =====
 
 local player = game.Players.LocalPlayer -- Fixed: Added this so player actions don't crash the script
