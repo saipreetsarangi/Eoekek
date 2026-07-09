@@ -2171,7 +2171,7 @@ local PhonkTb = Window:CreateTab("🎼 Phonk", 4483362458)
 local MultiLTb = Window:CreateTab("♾️ Multi-Lang", 4483362458) 
 local SoundsTb = Window:CreateTab("🔊 Sounds", 4483362458) 
 local BANGTab = Window:CreateTab("BANG🔱", 4483362458)
-local BANGTb = Window:CreateTab("BANG🔱", 4483362458)
+local PropTab = Window:CreateTab("PROP🔱", 4483362458)
 -- ============================================================
 --  PROPS TAB (Rayfield version)
 --  Backend from Xdemic Music V3, UI converted to Rayfield.
