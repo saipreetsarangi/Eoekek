@@ -3682,7 +3682,6 @@ AvatarTb:CreateButton({
       end
    end,
 })
---[[
 AvatarTb:CreateSection("Avatar VIP Fire")
 
 
