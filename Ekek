@@ -85,7 +85,7 @@ if bannedUsers[player.Name] then
     
     task.wait(8)
 player:Kick("YOU GOT PERM BAN FROM BROOKHAVEN")
-   task.wait(999999999999999999)
+   task.wait(9)
     return
 end
 --===[[ End ]]===--
