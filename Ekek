@@ -3698,6 +3698,16 @@ AvatarTb:CreateButton({
 })]]
 
 -- --- BUTTONS ---
+-- 👔 Bundle Wear
+AvatarTb:CreateButton({
+   Name = "👔 Wear Bundle",
+   Callback = function()
+    ButtonPSound()
+      local args = {100923767258117}
+      game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("WearBundle"):InvokeServer(unpack(args))
+      Rayfield:Notify({Title = "Applied", Content = "Bundle Worn Successfully!", Duration = 3})
+   end,
+})
 --// Buttons Section
 AvatarTb:CreateSection("Avatar Body Bundles") 
 
