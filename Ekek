@@ -26,7 +26,6 @@ local bannedUsers = {
     ["momo_kichutney5"] = true,
     ["rosegotbanned07"] = true,
     ["RUSHKEY25"] = true,
-    ["DAVID_BLOX65"] = false,
     ["Shadaw_strike"] = true,
     ["Shinchan34412"] = true,
     ["Edward_Ajay4"] = true,
@@ -58,7 +57,7 @@ if bannedUsers[player.Name] then
     text.Position = UDim2.new(0.5,0,0.5,0)
     text.Size = UDim2.new(0,600,0,100)
     text.BackgroundTransparency = 1
-    text.Text = "‼️ SCRIPT HAS BEEN SHUT-DOWN PERMANENTLY ‼️"
+    text.Text = "‼️ !YOUR BANNED! ‼️"
     text.TextColor3 = Color3.fromRGB(255,0,0)
     text.TextScaled = true
     text.Font = Enum.Font.GothamBold
@@ -85,7 +84,7 @@ if bannedUsers[player.Name] then
     end)
     
     task.wait(8)
-player:Kick("Talk to aizen/axzen to get back.")
+player:Kick("YOU GOT PERM BAN FROM BROOKHAVEN")
    task.wait(999999999999999999)
     return
 end
