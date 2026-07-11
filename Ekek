@@ -3698,9 +3698,11 @@ AvatarTb:CreateButton({
 })]]
 
 -- --- BUTTONS ---
+--// Buttons Section
+AvatarTb:CreateSection("Avatar Body Bundles") 
 -- 👔 Bundle Wear
 AvatarTb:CreateButton({
-   Name = "👔 Wear Bundle",
+   Name = "🎀mini plushie",
    Callback = function()
     ButtonPSound()
       local args = {100923767258117}
@@ -3708,8 +3710,6 @@ AvatarTb:CreateButton({
       Rayfield:Notify({Title = "Applied", Content = "Bundle Worn Successfully!", Duration = 3})
    end,
 })
---// Buttons Section
-AvatarTb:CreateSection("Avatar Body Bundles") 
 
 -- 🎀 Viral Girl Body
 AvatarTb:CreateButton({
