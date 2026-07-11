@@ -409,7 +409,7 @@ local function SetDefaultNameAndBio()
         nameTextRemote:FireServer("RolePlayName", "🔱xᴅᴇᴍɪᴄ ᴍᴜsɪᴄ🔱" )
 
         
-        nameColorRemote:FireServer("PickingRPNameColor", Color3.new(0.5, 0, 0.5)
+        nameColorRemote:FireServer("PickingRPNameColor", Color3.new(0.5, 0, 0.5))
 
         nameTextRemote:FireServer("RolePlayBio", toSmallCaps(displayName))
         
