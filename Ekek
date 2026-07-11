@@ -3712,7 +3712,41 @@ local function FireNotify(fireName)
         Image = 4483362458,
     })
 end
+-- =============================================
+--  COMBO SECTION
+-- =============================================
+AvatarTb:CreateSection("COMBO")
 
+AvatarTb:CreateButton({
+    Name = "blonde hair combo(boy)👱‍♂️",
+    Callback = function()
+        ButtonPSound()
+
+        local ids = {
+            81790350634105,
+            94691565781771,
+            17725606338,
+            15474892096,
+            15422142247,
+            100598977187264
+        }
+
+        for _, id in ipairs(ids) do
+            local args = {id}
+            pcall(function()
+                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Wear"):InvokeServer(unpack(args))
+            end)
+            task.wait(0.2)
+        end
+
+        Rayfield:Notify({
+            Title = "Combo Equipped",
+            Content = "blonde hair combo(boy) applied!",
+            Duration = 3,
+            Image = 4483362458,
+        })
+    end,
+})
 -- =============================================
 --  VIP FIRE SECTION (with helper functions)
 -- =============================================
