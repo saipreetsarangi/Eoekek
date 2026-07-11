@@ -3846,6 +3846,7 @@ AvatarTb:CreateButton({
 
 
 -- All ids
+AddAvatarItem("⬛️ VOID CROWN", 13634162618, "VOID CROWN")
 AddAvatarItem("🛸 Add UFO", 8151404994, "UFO")
 AddAvatarItem("😇 Add ANGLE HALO", 75992910653222, "ANGLE Halo")
 AddAvatarItem("🪓 Add Axe", 3240543366, "Axe")
