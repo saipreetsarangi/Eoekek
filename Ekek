@@ -3458,7 +3458,37 @@ end
 
 local AvatarTb = Window:CreateTab("Avatar", 4483362458) 
 
+-- =============================================
+--  OUTFITS SECTION
+-- =============================================
+AvatarTb:CreateSection("Outfits")
 
+AvatarTb:CreateButton({
+    Name = "👕 Load Outfit",
+    Callback = function()
+        ButtonPSound()  -- if you have a sound function; remove if not
+        local args = {
+            "Load",
+            "BH-AE-466e92d7fae1499eb8381e1fc6bc14f3"
+        }
+        local success, result = pcall(function()
+            return game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("AvatarEditorOutfitCodes"):InvokeServer(unpack(args))
+        end)
+        if success then
+            Rayfield:Notify({
+                Title = "Outfit Loaded",
+                Content = "Outfit applied successfully!",
+                Duration = 3
+            })
+        else
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "Failed to load outfit. Check remote.",
+                Duration = 3
+            })
+        end
+    end,
+})
 local function ApplyAnimation(id, name)
     local args = {[1] = id}
     pcall(function()
