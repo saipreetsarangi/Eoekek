@@ -3695,10 +3695,42 @@ local function FireNotify(fireName)
     })
 end
 
+-- =============================================
+--  VIP FIRE SECTION (with helper functions)
+-- =============================================
+
+-- Define missing functions if they don't already exist
+if not FireNotify then
+    local function FireNotify(color)
+        Rayfield:Notify({
+            Title = "🔥 Fire Applied",
+            Content = "You now have " .. color .. "!",
+            Duration = 3
+        })
+    end
+    _G.FireNotify = FireNotify
+end
+
+if not ButtonPSound then
+    local function ButtonPSound()
+        local s = Instance.new("Sound")
+        s.SoundId = "rbxassetid://1673280232"
+        s.Volume = 5
+        s.Parent = game:GetService("SoundService")
+        s:Play()
+        game:GetService("Debris"):AddItem(s, 5)
+    end
+    _G.ButtonPSound = ButtonPSound
+end
+
+-- Create the VIP FIRE section inside the Avatar tab
+AvatarTb:CreateSection("VIP FIRE")
+
 -- Black Fire
 AvatarTb:CreateButton({
     Name = "Black VIP Fire",
     Callback = function()
+        ButtonPSound()
         local args = {18637072603, "035FireBlack"}
         game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ApplyEmmiter"):InvokeServer(unpack(args))
         FireNotify("Black Fire")
@@ -3709,6 +3741,7 @@ AvatarTb:CreateButton({
 AvatarTb:CreateButton({
     Name = "Purple VIP Fire",
     Callback = function()
+        ButtonPSound()
         local args = {18637070174, "034FirePurple"}
         game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ApplyEmmiter"):InvokeServer(unpack(args))
         FireNotify("Purple Fire")
@@ -3719,6 +3752,7 @@ AvatarTb:CreateButton({
 AvatarTb:CreateButton({
     Name = "Blue VIP Fire",
     Callback = function()
+        ButtonPSound()
         local args = {18637076370, "033FireBlue"}
         game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ApplyEmmiter"):InvokeServer(unpack(args))
         FireNotify("Blue Fire")
@@ -3729,6 +3763,7 @@ AvatarTb:CreateButton({
 AvatarTb:CreateButton({
     Name = "Green VIP Fire",
     Callback = function()
+        ButtonPSound()
         local args = {18637078598, "032FireGreen"}
         game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ApplyEmmiter"):InvokeServer(unpack(args))
         FireNotify("Green Fire")
@@ -3739,6 +3774,7 @@ AvatarTb:CreateButton({
 AvatarTb:CreateButton({
     Name = "Orange VIP Fire",
     Callback = function()
+        ButtonPSound()
         local args = {18637025451, "031FireOrange"}
         game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ApplyEmmiter"):InvokeServer(unpack(args))
         FireNotify("Orange Fire")
@@ -3749,11 +3785,12 @@ AvatarTb:CreateButton({
 AvatarTb:CreateButton({
     Name = "White VIP Fire",
     Callback = function()
+        ButtonPSound()
         local args = {18637074370, "030FireWhite"}
         game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ApplyEmmiter"):InvokeServer(unpack(args))
         FireNotify("White Fire")
     end,
-})]]
+})
 
 -- --- BUTTONS ---
 --// Buttons Section
