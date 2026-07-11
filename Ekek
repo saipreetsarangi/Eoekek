@@ -3464,7 +3464,7 @@ local AvatarTb = Window:CreateTab("Avatar", 4483362458)
 AvatarTb:CreateSection("Outfits")
 
 AvatarTb:CreateButton({
-    Name = "👕 Load Outfit",
+    Name = "ZEPETO(BOY)👔",
     Callback = function()
         ButtonPSound()  -- if you have a sound function; remove if not
         local args = {
@@ -3484,6 +3484,34 @@ AvatarTb:CreateButton({
             Rayfield:Notify({
                 Title = "Error",
                 Content = "Failed to load outfit. Check remote.",
+                Duration = 3
+            })
+        end
+    end,
+})
+
+-- 👕 Second Outfit (same section)
+AvatarTb:CreateButton({
+    Name = "👕 Pink woman Fit🎀",
+    Callback = function()
+        ButtonPSound()
+        local args = {
+            "Load",
+            "BH-AE-df7ee0e60b8a445db9094b1eff69b66f"
+        }
+        local success, result = pcall(function()
+            return game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("AvatarEditorOutfitCodes"):InvokeServer(unpack(args))
+        end)
+        if success then
+            Rayfield:Notify({
+                Title = "Outfit Loaded",
+                Content = "Dank Fit applied!",
+                Duration = 3
+            })
+        else
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "Failed to load Dank Fit.",
                 Duration = 3
             })
         end
