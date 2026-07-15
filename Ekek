@@ -2482,20 +2482,19 @@ local VolumeSlider = PlaysTb:CreateSlider({
    end,
 })
 -- =============================================
---  VEHICLE SPEED SLIDER (only if pass owned)
+--  VEHICLE SPEED SLIDER (Optimized)
 -- =============================================
 
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 
--- Game Pass IDs
 local PASSES = {
-    Speed = 9066970,    -- Vehicle Speed Unlocked (up to 40)
-    Upgrade = 9066924   -- Vehicle Upgrade (up to 50)
+    Speed = 9066970,
+    Upgrade = 9066924
 }
 
--- Check if player owns a pass
 local function hasPass(passId)
     local success, result = pcall(function()
         return MarketplaceService:UserOwnsGamePassAsync(LocalPlayer.UserId, passId)
@@ -2503,15 +2502,16 @@ local function hasPass(passId)
     return success and result
 end
 
--- Determine max speed and if any pass is owned
-local hasSpeed = hasPass(PASSES.Speed)
-local hasUpgrade = hasPass(PASSES.Upgrade)
-local anyPass = hasSpeed or hasUpgrade
+-- Use a task.spawn to run this without blocking the rest of your UI load
+task.spawn(function()
+    -- Give the game a second to load user data
+    task.wait(2) 
 
--- Only create the slider if at least one pass is owned
-if anyPass then
-    local maxVehicleSpeed = hasUpgrade and 50 or 40  -- Upgrade gives 50, Speed gives 40
+    local hasSpeed = hasPass(PASSES.Speed)
+    local hasUpgrade = hasPass(PASSES.Upgrade)
+    local maxVehicleSpeed = hasUpgrade and 50 or (hasSpeed and 40 or 25)
 
+    -- Build the slider inside the tab
     PlaysTb:CreateSlider({
         Name = "🚗 SPEED",
         Range = {25, maxVehicleSpeed},
@@ -2521,42 +2521,32 @@ if anyPass then
         Flag = "VehicleSpeed",
 
         Callback = function(Value)
-            ButtonPSound()
-            
-            -- Double-check max (in case pass status changed)
-            local currentHasSpeed = hasPass(PASSES.Speed)
-            local currentHasUpgrade = hasPass(PASSES.Upgrade)
-            local currentMax = currentHasUpgrade and 50 or (currentHasSpeed and 40 or 25)
-            
-            if Value > currentMax then
-                Rayfield:Notify({
-                    Title = "⚠️ Speed Limited",
-                    Content = "Purchase Vehicle Speed pass (40 MPH) or Upgrade pass (50 MPH)!",
-                    Duration = 4
-                })
-                return
-            end
-            
-            -- Apply speed securely and handle any remote errors
-            local success, err = pcall(function()
-                -- Fixed: Changed InvokeServer to FireServer and simplified the Value passing
-                game:GetService("ReplicatedStorage").Remotes.SetNoMotorVehicleSpeed:FireServer(Value)
-            end)
-            
-            -- Stop the success notification if the remote fails
-            if not success then
-                warn("Xdemic Hub Error: Remote failed - " .. tostring(err))
+            -- 1. Safety check for the Remote
+            local Remotes = ReplicatedStorage:FindFirstChild("Remotes")
+            if not Remotes then 
+                warn("Xdemic Error: 'Remotes' folder missing.") 
                 return 
             end
             
-            Rayfield:Notify({
-                Title = "🚗 Speed Set",
-                Content = "Vehicle speed set to " .. Value .. " MPH",
-                Duration = 2
-            })
+            local SpeedRemote = Remotes:FindFirstChild("SetNoMotorVehicleSpeed")
+            if not SpeedRemote then 
+                warn("Xdemic Error: 'SetNoMotorVehicleSpeed' remote missing.") 
+                return 
+            end
+
+            -- 2. Execute
+            local success, err = pcall(function()
+                SpeedRemote:FireServer(Value)
+            end)
+
+            if success then
+                Rayfield:Notify({Title = "🚗 Speed Set", Content = "Speed: " .. Value .. " MPH", Duration = 2})
+            else
+                warn("Xdemic Error: " .. tostring(err))
+            end
         end,
     })
-end
+end)
 
 PlaysTb:CreateSection("Choose Your Vehicle For Music")
 -- Premium Button
