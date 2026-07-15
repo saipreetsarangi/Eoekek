@@ -2537,11 +2537,17 @@ if anyPass then
                 return
             end
             
-            -- Apply speed
-            pcall(function()
-                local args = {[1] = Value}
-                game:GetService("ReplicatedStorage").Remotes.SetNoMotorVehicleSpeed:InvokeServer(unpack(args))
+            -- Apply speed securely and handle any remote errors
+            local success, err = pcall(function()
+                -- Fixed: Changed InvokeServer to FireServer and simplified the Value passing
+                game:GetService("ReplicatedStorage").Remotes.SetNoMotorVehicleSpeed:FireServer(Value)
             end)
+            
+            -- Stop the success notification if the remote fails
+            if not success then
+                warn("Xdemic Hub Error: Remote failed - " .. tostring(err))
+                return 
+            end
             
             Rayfield:Notify({
                 Title = "🚗 Speed Set",
@@ -2551,6 +2557,7 @@ if anyPass then
         end,
     })
 end
+
 PlaysTb:CreateSection("Choose Your Vehicle For Music")
 -- Premium Button
 PlaysTb:CreateButton({
