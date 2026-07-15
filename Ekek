@@ -2485,8 +2485,6 @@ local VolumeSlider = PlaysTb:CreateSlider({
 --  VEHICLE SPEED SLIDER (pass‑dependent)
 -- =============================================
 local MarketplaceService = game:GetService("MarketplaceService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
 local PASSES = {
     Speed = 9066970,
     Upgrade = 9066924
@@ -2513,7 +2511,7 @@ if hasSpeed or hasUpgrade then
         Flag = "VehicleSpeed",
         Callback = function(Value)
             ButtonPSound()
-            local Remotes = ReplicatedStorage:FindFirstChild("Remotes")
+            local Remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
             if Remotes then
                 local SpeedRemote = Remotes:FindFirstChild("SetNoMotorVehicleSpeed")
                 if SpeedRemote then
@@ -2526,8 +2524,6 @@ if hasSpeed or hasUpgrade then
                             Content = "Vehicle speed set to " .. Value .. " MPH",
                             Duration = 2
                         })
-                    else
-                        warn("Speed remote error: " .. tostring(err))
                     end
                 end
             end
