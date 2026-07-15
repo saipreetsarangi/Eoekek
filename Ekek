@@ -2484,12 +2484,17 @@ local VolumeSlider = PlaysTb:CreateSlider({
 -- =============================================
 --  VEHICLE SPEED SLIDER (pass‑dependent)
 -- =============================================
+
 local MarketplaceService = game:GetService("MarketplaceService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Game Pass IDs
 local PASSES = {
     Speed = 9066970,
     Upgrade = 9066924
 }
 
+-- Check pass ownership
 local function hasPass(passId)
     local success, result = pcall(function()
         return MarketplaceService:UserOwnsGamePassAsync(game.Players.LocalPlayer.UserId, passId)
@@ -2497,11 +2502,18 @@ local function hasPass(passId)
     return success and result
 end
 
-local hasSpeed = hasPass(PASSES.Speed)
-local hasUpgrade = hasPass(PASSES.Upgrade)
+-- Build slider only if at least one pass is owned
+task.spawn(function()
+    local hasSpeed = hasPass(PASSES.Speed)
+    local hasUpgrade = hasPass(PASSES.Upgrade)
 
-if hasSpeed or hasUpgrade then
-    local maxSpeed = hasUpgrade and 50 or 40
+    -- If no pass, skip creating the slider
+    if not (hasSpeed or hasUpgrade) then
+        return
+    end
+
+    local maxSpeed = hasUpgrade and 50 or 40  -- Upgrade gives 50, Speed gives 40
+
     PlaysTb:CreateSlider({
         Name = "🚗 SPEED (MPH)",
         Range = {25, maxSpeed},
@@ -2509,27 +2521,34 @@ if hasSpeed or hasUpgrade then
         CurrentValue = 25,
         Suffix = " MPH",
         Flag = "VehicleSpeed",
+
         Callback = function(Value)
             ButtonPSound()
-            local Remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
-            if Remotes then
-                local SpeedRemote = Remotes:FindFirstChild("SetNoMotorVehicleSpeed")
-                if SpeedRemote then
-                    local success, err = pcall(function()
-                        SpeedRemote:InvokeServer(Value)
-                    end)
-                    if success then
-                        Rayfield:Notify({
-                            Title = "🚗 Speed Set",
-                            Content = "Vehicle speed set to " .. Value .. " MPH",
-                            Duration = 2
-                        })
-                    end
+
+            local Remotes = ReplicatedStorage:FindFirstChild("Remotes")
+            if not Remotes then
+                return
+            end
+
+            local SpeedRemote = Remotes:FindFirstChild("SetNoMotorVehicleSpeed")
+            if SpeedRemote then
+                local success, err = pcall(function()
+                    SpeedRemote:InvokeServer(Value)
+                end)
+
+                if success then
+                    Rayfield:Notify({
+                        Title = "🚗 Speed Set",
+                        Content = "Vehicle speed set to " .. Value .. " MPH",
+                        Duration = 2
+                    })
+                else
+                    warn("Speed remote error: " .. tostring(err))
                 end
             end
         end,
     })
-end
+end)
 PlaysTb:CreateSection("Choose Your Vehicle For Music")
 -- Premium Button
 PlaysTb:CreateButton({
