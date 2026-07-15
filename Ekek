@@ -2481,7 +2481,76 @@ local VolumeSlider = PlaysTb:CreateSlider({
 
    end,
 })
+-- =============================================
+--  VEHICLE SPEED SLIDER (only if pass owned)
+-- =============================================
 
+local MarketplaceService = game:GetService("MarketplaceService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Game Pass IDs
+local PASSES = {
+    Speed = 9066970,    -- Vehicle Speed Unlocked (up to 40)
+    Upgrade = 9066924   -- Vehicle Upgrade (up to 50)
+}
+
+-- Check if player owns a pass
+local function hasPass(passId)
+    local success, result = pcall(function()
+        return MarketplaceService:UserOwnsGamePassAsync(LocalPlayer.UserId, passId)
+    end)
+    return success and result
+end
+
+-- Determine max speed and if any pass is owned
+local hasSpeed = hasPass(PASSES.Speed)
+local hasUpgrade = hasPass(PASSES.Upgrade)
+local anyPass = hasSpeed or hasUpgrade
+
+-- Only create the slider if at least one pass is owned
+if anyPass then
+    local maxVehicleSpeed = hasUpgrade and 50 or 40  -- Upgrade gives 50, Speed gives 40
+
+    PlaysTb:CreateSlider({
+        Name = "🚗 SPEED",
+        Range = {25, maxVehicleSpeed},
+        Increment = 1,
+        CurrentValue = 25,
+        Suffix = " MPH",
+        Flag = "VehicleSpeed",
+
+        Callback = function(Value)
+            ButtonPSound()
+            
+            -- Double-check max (in case pass status changed)
+            local currentHasSpeed = hasPass(PASSES.Speed)
+            local currentHasUpgrade = hasPass(PASSES.Upgrade)
+            local currentMax = currentHasUpgrade and 50 or (currentHasSpeed and 40 or 25)
+            
+            if Value > currentMax then
+                Rayfield:Notify({
+                    Title = "⚠️ Speed Limited",
+                    Content = "Purchase Vehicle Speed pass (40 MPH) or Upgrade pass (50 MPH)!",
+                    Duration = 4
+                })
+                return
+            end
+            
+            -- Apply speed
+            pcall(function()
+                local args = {[1] = Value}
+                game:GetService("ReplicatedStorage").Remotes.SetNoMotorVehicleSpeed:InvokeServer(unpack(args))
+            end)
+            
+            Rayfield:Notify({
+                Title = "🚗 Speed Set",
+                Content = "Vehicle speed set to " .. Value .. " MPH",
+                Duration = 2
+            })
+        end,
+    })
+end
 PlaysTb:CreateSection("Choose Your Vehicle For Music")
 -- Premium Button
 PlaysTb:CreateButton({
