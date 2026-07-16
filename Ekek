@@ -4774,7 +4774,7 @@ AvatarTb:CreateButton({
     end,
 })
 AvatarTb:CreateButton({
-    Name = "combo 2 💫",
+    Name = "brown hair combo (boy👱‍♂️)",
     Callback = function()
         ButtonPSound()
 
@@ -4797,6 +4797,33 @@ AvatarTb:CreateButton({
         Rayfield:Notify({
             Title = "Combo Equipped",
             Content = "Combo 2 applied successfully!",
+            Duration = 3,
+            Image = 4483362458,
+        })
+    end,
+})
+AvatarTb:CreateButton({
+    Name = "black hair combo (boy👱‍♂️)",
+    Callback = function()
+        ButtonPSound()
+
+        local ids = {
+            15847167864,
+            139952763739095,
+            94243516708044
+        }
+
+        for _, id in ipairs(ids) do
+            local args = {id}
+            pcall(function()
+                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Wear"):InvokeServer(unpack(args))
+            end)
+            task.wait(0.2)
+        end
+
+        Rayfield:Notify({
+            Title = "Combo Equipped",
+            Content = "Combo 3 applied successfully!",
             Duration = 3,
             Image = 4483362458,
         })
