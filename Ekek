@@ -4773,6 +4773,35 @@ AvatarTb:CreateButton({
         })
     end,
 })
+AvatarTb:CreateButton({
+    Name = "combo 2 💫",
+    Callback = function()
+        ButtonPSound()
+
+        local ids = {
+            84847355879633,
+            91301658878239,
+            80328946750876,
+            14266962348,
+            15894552056
+        }
+
+        for _, id in ipairs(ids) do
+            local args = {id}
+            pcall(function()
+                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Wear"):InvokeServer(unpack(args))
+            end)
+            task.wait(0.2)
+        end
+
+        Rayfield:Notify({
+            Title = "Combo Equipped",
+            Content = "Combo 2 applied successfully!",
+            Duration = 3,
+            Image = 4483362458,
+        })
+    end,
+})
 -- =============================================
 --  VIP FIRE SECTION (with helper functions)
 -- =============================================
