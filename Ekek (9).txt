@@ -634,7 +634,7 @@ end
 --===[[ End ]]===--
 
 --===[[ Rayfield WindowCreation ]]===--
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/gen2"))()
 
 local Window = Rayfield:CreateWindow({
    Name = "🎵 XDEMIC Music Hub",
